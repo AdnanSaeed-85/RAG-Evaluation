@@ -43,15 +43,15 @@ def load_store():
     docs = load_transcripts()
 
     chunks = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=150,
+        chunk_size=750,
+        chunk_overlap=100,
     ).split_documents(docs)
 
     return Chroma.from_documents(chunks, embeddings, persist_directory=DB_DIR)
 
 
 def build_retriever():
-    return load_store().as_retriever(search_kwargs={"k": 5})
+    return load_store().as_retriever(search_kwargs={"k": 7})
 
 
 # 3. TRY IT ---- python src/retriever.py
