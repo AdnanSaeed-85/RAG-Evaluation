@@ -8,10 +8,13 @@ from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
+from sentence_transformers import CrossEncoder
+
 load_dotenv()
 
 DATA_DIR = "data"
 DB_DIR = "chroma_store"
+CROSS_ENCODER = "cross-encoder/ms-marco-MiniLM-L-12-v2"
 
 # 1. LOAD ---- read each transcript, throw away the .VTT timestamps
 def load_transcripts():
@@ -42,25 +45,22 @@ def load_store():
 
     docs = load_transcripts()
 
-    chunks = RecursiveCharacterTextSplitter(
-        chunk_size=750,
-        chunk_overlap=100,
-    ).split_documents(docs)
+    chunks = RecursiveCharacterTextSplitter(chunk_size=750, chunk_overlap=100).split_documents(docs)
 
     return Chroma.from_documents(chunks, embeddings, persist_directory=DB_DIR)
 
 
-def build_retriever():
-    return load_store().as_retriever(search_kwargs={"k": 7})
+# def build_retriever():
+#     return load_store().as_retriever(search_kwargs={"k": 5})
 
 
-# 3. TRY IT ---- python src/retriever.py
-if __name__ == "__main__":
+# # 3. TRY IT ---- python src/retriever.py
+# if __name__ == "__main__":
 
-    retriever = build_retriever()
+#     retriever = build_retriever()
 
-    # results = retriever.invoke("what is regression testing?")
-    results = retriever.invoke("what is online evals?")
+#     # results = retriever.invoke("what is regression testing?")
+#     results = retriever.invoke("what is online evals?")
     
-    for r in results:
-        print(f"[Session {r.metadata['session']}] {r.page_content[:150]}...\n")
+#     for r in results:
+#         print(f"[Session {r.metadata['session']}] {r.page_content[:150]}...\n")
